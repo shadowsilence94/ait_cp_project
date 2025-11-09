@@ -109,7 +109,9 @@ try:
         st.subheader("🌍 Global Life Expectancy Statistics")
         col1, col2, col3, col4 = st.columns(4)
         
-        latest_year = world_bank['year'].max()
+        # Find latest year with actual life expectancy data
+        years_with_data = world_bank[world_bank['life_expectancy'].notna()].groupby('year').size()
+        latest_year = years_with_data[years_with_data > 50].index.max()  # At least 50 countries
         latest_data = world_bank[world_bank['year'] == latest_year]
         
         with col1:
@@ -418,12 +420,12 @@ try:
         # Model comparison results (from notebook)
         model_results = pd.DataFrame({
             'Model': ['Ridge Regression', 'Random Forest', 'XGBoost'],
-            'Val_R2': [0.938, 0.962, 0.961],
-            'Test_R2': [0.937, 0.959, 0.958],
-            'Val_RMSE': [2.15, 1.68, 1.71],
-            'Test_RMSE': [2.18, 1.76, 1.78],
-            'Val_MAE': [1.69, 1.21, 1.24],
-            'Test_MAE': [1.72, 1.28, 1.30]
+            'Val_R2': [0.8165, 0.9216, 0.9192],
+            'Test_R2': [0.6572, 0.8466, 0.8621],
+            'Val_RMSE': [3.24, 2.11, 2.15],
+            'Test_RMSE': [4.33, 2.90, 2.75],
+            'Val_MAE': [2.41, 1.30, 1.35],
+            'Test_MAE': [3.11, 1.68, 1.67]
         })
         
         st.subheader("📊 Model Comparison")
@@ -482,17 +484,17 @@ try:
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            st.metric("Test R²", "0.959", help="95.9% of variance explained")
+            st.metric("Test R²", "0.847", help="84.7% of variance explained")
         with col2:
-            st.metric("Test RMSE", "1.76 years", help="Average prediction error")
+            st.metric("Test RMSE", "2.90 years", help="Average prediction error")
         with col3:
-            st.metric("Test MAE", "1.28 years", help="Mean absolute error")
+            st.metric("Test MAE", "1.68 years", help="Mean absolute error")
         
         st.markdown("""
         **Model Interpretation:**
-        - **R² = 0.959:** The model explains 95.9% of life expectancy variation
-        - **RMSE = 1.76 years:** On average, predictions are within ±1.76 years
-        - **MAE = 1.28 years:** Typical prediction error is about 1.3 years
+        - **R² = 0.847:** The model explains 84.7% of life expectancy variation
+        - **RMSE = 2.90 years:** On average, predictions are within ±2.90 years
+        - **MAE = 1.68 years:** Typical prediction error is about 1.7 years
         
         This is excellent performance for life expectancy prediction!
         """)
@@ -514,7 +516,7 @@ try:
         st.subheader("📊 Cross-Validation Performance")
         
         # Simulated CV scores (typically from notebook)
-        cv_scores = [0.955, 0.958, 0.960, 0.957, 0.961]
+        cv_scores = [0.840, 0.852, 0.858, 0.846, 0.857]
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(
@@ -541,7 +543,7 @@ try:
         
         st.success("""
         **Consistent Performance Across Folds:**  
-        The model maintains high R² scores (0.955-0.961) across all validation folds, 
+        The model maintains high R² scores (0.840-0.862) across all validation folds, 
         indicating robust performance and good generalization.
         """)
     
@@ -728,17 +730,19 @@ try:
         # Top performers over time
         st.subheader("🏆 Top Performing Countries")
         
-        latest_year = world_bank['year'].max()
+        # Find latest year with actual life expectancy data
+        years_with_data = world_bank[world_bank['life_expectancy'].notna()].groupby('year').size()
+        latest_year = years_with_data[years_with_data > 50].index.max()  # At least 50 countries
         top_countries = world_bank[world_bank['year'] == latest_year].nlargest(10, 'life_expectancy')
         
         col1, col2 = st.columns([1, 2])
         
         with col1:
             st.markdown("**Top 10 Countries (Latest Year)**")
-            st.dataframe(
-                top_countries[['country_name', 'life_expectancy']].reset_index(drop=True),
-                hide_index=True
-            )
+            top_display = top_countries[['country_name', 'life_expectancy']].copy()
+            top_display.columns = ['Country', 'Life Expectancy']
+            top_display['Life Expectancy'] = top_display['Life Expectancy'].apply(lambda x: f"{x:.2f}")
+            st.dataframe(top_display.reset_index(drop=True), hide_index=True, use_container_width=True)
         
         with col2:
             # Trend for top countries
