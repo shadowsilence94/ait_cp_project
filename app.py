@@ -10,7 +10,7 @@ warnings.filterwarnings('ignore')
 # Page configuration
 st.set_page_config(
     page_title="Life Expectancy Forecasting - ML Showcase",
-    page_icon="🌍",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -35,7 +35,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title
-st.markdown('<div class="main-header">🌍 Life Expectancy Prediction using Machine Learning</div>', unsafe_allow_html=True)
+# Title
+st.markdown('<div class="main-header">Life Expectancy Prediction using Machine Learning</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Interactive ML Showcase Project by Htut Ko Ko, Kaung Hein Htet, Michael R. Lacar</div>', unsafe_allow_html=True)
 
 # Load data
@@ -51,22 +52,25 @@ try:
     world_bank, forecasts, imputed_data = load_data()
     
     # Sidebar
-    st.sidebar.title("📊 Navigation")
+    st.sidebar.title("Navigation")
     page = st.sidebar.radio(
         "Choose a section:",
-        ["🏠 Overview", "🔮 Forecast", "📈 ML Pipeline", "🎯 Model Performance", "📊 Feature Analysis", "🌐 Global Trends"]
+        ["Overview", "Forecast", "ML Pipeline", "Model Performance", "Feature Analysis", "Global Trends"]
     )
     
     # ========================================
     # PAGE 1: OVERVIEW
     # ========================================
-    if page == "🏠 Overview":
-        st.header("📋 Project Overview")
+    # ========================================
+    # PAGE 1: OVERVIEW
+    # ========================================
+    if page == "Overview":
+        st.header("Project Overview")
         
         col1, col2 = st.columns(2)
         
         with col1:
-            st.subheader("🎯 Project Objective")
+            st.subheader("Project Objective")
             st.markdown("""
             This project demonstrates advanced **Machine Learning** techniques to predict and forecast 
             life expectancy across countries using socioeconomic and health indicators.
@@ -79,7 +83,7 @@ try:
             - 📈 Interactive visualizations
             """)
             
-            st.subheader("📚 Dataset Information")
+            st.subheader("Dataset Information")
             st.info(f"""
             - **Countries:** {world_bank['country_name'].nunique()}
             - **Years Coverage:** {world_bank['year'].min()} - {world_bank['year'].max()}
@@ -88,7 +92,7 @@ try:
             """)
         
         with col2:
-            st.subheader("🔬 Key Features Used")
+            st.subheader("Key Features Used")
             features = [
                 "GDP per Capita (USD)",
                 "Health Expenditure (% GDP)",
@@ -106,7 +110,7 @@ try:
                 st.markdown(f"✓ {feat}")
         
         # Global statistics
-        st.subheader("🌍 Global Life Expectancy Statistics")
+        st.subheader("Global Life Expectancy Statistics")
         col1, col2, col3, col4 = st.columns(4)
         
         # Find latest year with actual life expectancy data
@@ -131,7 +135,7 @@ try:
             st.metric("Global Gap", f"{gap:.1f} years")
         
         # Timeline visualization
-        st.subheader("📈 Global Life Expectancy Trend Over Time")
+        st.subheader("Global Life Expectancy Trend Over Time")
         yearly_avg = world_bank[world_bank['life_expectancy'].notna()].groupby('year')['life_expectancy'].mean().reset_index()
         
         fig = go.Figure()
@@ -157,8 +161,8 @@ try:
     # ========================================
     # PAGE 2: FORECAST
     # ========================================
-    elif page == "🔮 Forecast":
-        st.header("🔮 Life Expectancy Forecasting (2025-2030)")
+    elif page == "Forecast":
+        st.header("Life Expectancy Forecasting (2025-2030)")
         
         # Country selection
         countries = sorted(forecasts['country_name'].unique())
@@ -173,7 +177,7 @@ try:
             
             with col1:
                 # Forecast visualization
-                st.subheader(f"📊 Forecast for {selected_country}")
+                st.subheader(f"Forecast for {selected_country}")
                 
                 # Combine historical and forecast
                 recent_historical = historical[
@@ -227,7 +231,7 @@ try:
                 st.plotly_chart(fig, use_container_width=True)
             
             with col2:
-                st.subheader("📊 Forecast Statistics")
+                st.subheader("Forecast Statistics")
                 
                 last_historical = recent_historical.iloc[-1]['life_expectancy']
                 last_forecast = forecast_df.iloc[-1]['life_expectancy']
@@ -250,7 +254,7 @@ try:
                     f"{avg_growth:.2f} years/year"
                 )
                 
-                st.subheader("📈 Forecast Details")
+                st.subheader("Forecast Details")
                 st.dataframe(
                     country_data[['year', 'predicted_life_expectancy']].rename(
                         columns={'predicted_life_expectancy': 'Life Expectancy'}
@@ -259,7 +263,7 @@ try:
                 )
         
         # Top/Bottom performers
-        st.subheader("🏆 Forecast Comparison (2030)")
+        st.subheader("Forecast Comparison (2030)")
         
         col1, col2 = st.columns(2)
         
@@ -308,10 +312,10 @@ try:
     # ========================================
     # PAGE 3: ML PIPELINE
     # ========================================
-    elif page == "📈 ML Pipeline":
-        st.header("📈 Machine Learning Pipeline")
+    elif page == "ML Pipeline":
+        st.header("Machine Learning Pipeline")
         
-        st.subheader("🔄 Data Processing Workflow")
+        st.subheader("Data Processing Workflow")
         
         # Pipeline steps
         col1, col2, col3 = st.columns(3)
@@ -341,7 +345,7 @@ try:
             """)
         
         # Data quality
-        st.subheader("📊 Data Quality Analysis")
+        st.subheader("Data Quality Analysis")
         
         col1, col2 = st.columns(2)
         
@@ -377,7 +381,7 @@ try:
             st.plotly_chart(fig, use_container_width=True)
         
         # Feature engineering
-        st.subheader("⚙️ Feature Engineering")
+        st.subheader("Feature Engineering")
         
         st.markdown("""
         **Temporal Features Created:**
@@ -393,7 +397,7 @@ try:
         """)
         
         # Train/Val/Test split visualization
-        st.subheader("📅 Temporal Data Split")
+        st.subheader("Temporal Data Split")
         
         split_info = pd.DataFrame({
             'Dataset': ['Training', 'Validation', 'Test'],
@@ -417,8 +421,8 @@ try:
     # ========================================
     # PAGE 4: MODEL PERFORMANCE
     # ========================================
-    elif page == "🎯 Model Performance":
-        st.header("🎯 Model Performance Analysis")
+    elif page == "Model Performance":
+        st.header("Model Performance Analysis")
         
         # Model comparison results (from notebook)
         model_results = pd.DataFrame({
@@ -431,7 +435,7 @@ try:
             'Test_MAE': [3.11, 1.68, 1.67]
         })
         
-        st.subheader("📊 Model Comparison")
+        st.subheader("Model Comparison")
         
         col1, col2 = st.columns(2)
         
@@ -482,7 +486,7 @@ try:
             st.plotly_chart(fig, use_container_width=True)
         
         # Best model metrics
-        st.subheader("🏆 Best Model: Random Forest")
+        st.subheader("Best Model: Random Forest")
         
         col1, col2, col3 = st.columns(3)
         
@@ -503,7 +507,7 @@ try:
         """)
         
         # Hyperparameter tuning
-        st.subheader("🔧 Hyperparameter Tuning Results")
+        st.subheader("Hyperparameter Tuning Results")
         
         st.markdown("""
         **Best Random Forest Parameters:**
@@ -516,7 +520,7 @@ try:
         """)
         
         # Cross-validation visualization
-        st.subheader("📊 Cross-Validation Performance")
+        st.subheader("Cross-Validation Performance")
         
         # Simulated CV scores (typically from notebook)
         cv_scores = [0.840, 0.852, 0.858, 0.846, 0.857]
@@ -553,8 +557,8 @@ try:
     # ========================================
     # PAGE 5: FEATURE ANALYSIS
     # ========================================
-    elif page == "📊 Feature Analysis":
-        st.header("📊 Feature Importance Analysis")
+    elif page == "Feature Analysis":
+        st.header("Feature Importance Analysis")
         
         # Feature importance (typical values from Random Forest)
         feature_importance = pd.DataFrame({
@@ -596,39 +600,46 @@ try:
         """)
         
         # Correlation analysis
-        st.subheader("🔗 Feature Correlations with Life Expectancy")
+        st.subheader("Feature Correlations with Life Expectancy")
         
-        # Key features for correlation
-        key_features = [
-            'gdp_per_capita_usd', 'health_exp_pct_gdp', 'infant_mortality',
-            'access_to_clean_fuels_to_cook', 'pm_2_5', 'fertility_rate',
-            'age_dependency_ratio', 'life_expectancy'
-        ]
+        # User provided correlation values
+        correlation_data = {
+            'Feature': [
+                'Infant Mortality',
+                'Fertility Rate',
+                'Age Dependency Ratio',
+                'Income Distribution',
+                'GDP per Capita (USD)',
+                'Access to Clean Fuels'
+            ],
+            'Correlation': [
+                -0.897,
+                -0.841,
+                0.769,
+                -0.659,
+                0.525,
+                0.519
+            ]
+        }
         
-        # Filter available features
-        available = [f for f in key_features if f in imputed_data.columns]
+        correlation_df = pd.DataFrame(correlation_data).sort_values('Correlation')
         
-        if len(available) > 2:
-            # Sample data for performance
-            sample_data = imputed_data[available].dropna().sample(min(5000, len(imputed_data)), random_state=42)
-            
-            correlation = sample_data.corr()['life_expectancy'].drop('life_expectancy').sort_values()
-            
-            fig = px.bar(
-                x=correlation.values,
-                y=correlation.index,
-                orientation='h',
-                title="Correlation with Life Expectancy",
-                labels={'x': 'Correlation Coefficient', 'y': 'Feature'},
-                color=correlation.values,
-                color_continuous_scale='RdYlGn',
-                range_color=[-1, 1]
-            )
-            fig.update_layout(height=400)
-            st.plotly_chart(fig, use_container_width=True)
+        fig = px.bar(
+            correlation_df,
+            x='Correlation',
+            y='Feature',
+            orientation='h',
+            title="Correlation with Life Expectancy",
+            labels={'Correlation': 'Correlation Coefficient', 'Feature': 'Feature'},
+            color='Correlation',
+            color_continuous_scale='RdYlGn',
+            range_color=[-1, 1]
+        )
+        fig.update_layout(height=400)
+        st.plotly_chart(fig, use_container_width=True)
         
         # Feature relationships
-        st.subheader("📈 Key Feature Relationships")
+        st.subheader("Key Feature Relationships")
         
         col1, col2 = st.columns(2)
         
@@ -680,10 +691,10 @@ try:
     # ========================================
     # PAGE 6: GLOBAL TRENDS
     # ========================================
-    elif page == "🌐 Global Trends":
-        st.header("🌐 Global Life Expectancy Trends")
+    elif page == "Global Trends":
+        st.header("Global Life Expectancy Trends")
         
-        st.subheader("🗺️ Historical Trends")
+        st.subheader("Historical Trends")
         
         # Historical trend by year
         yearly_data = world_bank[world_bank['life_expectancy'].notna()].groupby('year').agg({
@@ -731,7 +742,7 @@ try:
         st.plotly_chart(fig, use_container_width=True)
         
         # Top performers over time
-        st.subheader("🏆 Top Performing Countries")
+        st.subheader("Top Performing Countries")
         
         # Find latest year with actual life expectancy data
         years_with_data = world_bank[world_bank['life_expectancy'].notna()].groupby('year').size()
@@ -766,7 +777,7 @@ try:
             st.plotly_chart(fig, use_container_width=True)
         
         # Improvement analysis
-        st.subheader("📈 Greatest Improvements (Last 20 Years)")
+        st.subheader("Greatest Improvements (Last 20 Years)")
         
         year_start = latest_year - 20
         improvements = []
